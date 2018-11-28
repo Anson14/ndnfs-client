@@ -1,19 +1,11 @@
-#include "sys/socket.h"
-#include "bits/stdc++.h"
-#include "iostream"
-#include <stdio.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <arpa/inet.h>
+#include <sys/stat.h>
+#include "ndnfs-client.h"
 
 #define PORT 8080
-enum orders {
-    QUIT, SEND, DEFAULT
-};
-
 
 using namespace std;
+
+int sock = 0;
 
 int init_socket(struct sockaddr_in &serv_addr) {
     int sock = 0;
@@ -38,25 +30,27 @@ int init_socket(struct sockaddr_in &serv_addr) {
 
 }
 
-orders getorder(char *order) {
+orders getOrder(string order) {
     orders o = DEFAULT;
-    if (strcmp(order, "quit") == 0)
+    if (strcmp(order.c_str(), "quit") == 0)
         o = QUIT;
-    else if (strcmp(order, "send") == 0)
+    else if (strcmp(order.c_str(), "send") == 0)
         o = SEND;
+    else if (strcmp(order.c_str(), "getattr") == 0)
+        o = GETATTR;
     return o;
 }
 
 void usage() {
-    cout<< "usage:"<< endl;
+    cout << "usage:" << endl;
     cout << "send: send a message to server." << endl;
     cout << "quit: finish this session." << endl;
-    cout<<"******************************************"<< endl;
+    cout << "******************************************" << endl;
 }
 
 int main(int argc, char const *argv[]) {
 
-    int sock = 0, valread;
+    int  valread;
     struct sockaddr_in serv_addr;
     char *hello = "Hello from client";
     char buffer[1024] = {0};
@@ -70,17 +64,27 @@ int main(int argc, char const *argv[]) {
 
     char inputOrder[200];
     while (true) {
-        cin >> inputOrder;
-        orders order = getorder(inputOrder);
+        memset(inputOrder, '\0', sizeof(inputOrder));
+        cin.getline(inputOrder, 200);
+        vector<string> v;
+        SplitString(inputOrder, v, " ");
+        orders order = getOrder(v[0]);
         switch (order) {
             case QUIT:
                 return 0;
-            case SEND:
+            case SEND: {
                 send(sock, hello, strlen(hello), 0);
                 printf("Hello message sent\n");
                 valread = read(sock, buffer, 1024);
                 printf("%s\n", buffer);
                 break;
+            }
+            case GETATTR: {
+                struct stat * st;
+                if (getattr(inputOrder, st) == 0)
+                    cout<< st->st_size<< endl;
+                break;
+            }
             default:
                 usage();
                 break;
