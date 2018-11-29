@@ -7,6 +7,8 @@
 
 #include "ndnfs-client.h"
 
-int getattr(char * inputOrder,  struct stat * stbuf);
+int client_getattr(char * inputOrder,  struct stat * stbuf);
+
+int client_open(char *inputOrder);
 
 #endif //NDNFS_CLIENT_CONNECT_H

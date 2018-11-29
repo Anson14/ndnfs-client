@@ -38,6 +38,8 @@ orders getOrder(string order) {
         o = SEND;
     else if (strcmp(order.c_str(), "getattr") == 0)
         o = GETATTR;
+    else if(strcmp(order.c_str(), "open") == 0)
+        o = OPEN;
     return o;
 }
 
@@ -81,8 +83,12 @@ int main(int argc, char const *argv[]) {
             }
             case GETATTR: {
                 struct stat * st;
-                if (getattr(inputOrder, st) == 0)
+                if (client_getattr(inputOrder, st) == 0)
                     cout<< st->st_size<< endl;
+                break;
+            }
+            case OPEN: {
+                client_open(inputOrder);
                 break;
             }
             default:

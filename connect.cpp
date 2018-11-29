@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int getattr(char * inputOrder, struct stat * stbuf) {
+int client_getattr(char *inputOrder, struct stat *stbuf) {
     send(sock, inputOrder, strlen(inputOrder), 0);
     Json::Value info;
     Json::Reader reader;
@@ -21,11 +21,32 @@ int getattr(char * inputOrder, struct stat * stbuf) {
             stbuf->st_nlink = info["st_nlink"].asInt();
             stbuf->st_uid = info["st_uid"].asInt();
             stbuf->st_gid = info["st_gid"].asInt();
-            cout<< stbuf->st_size<< endl;
+            cout << stbuf->st_size << endl;
         } else {
-            FILE_LOG(LOG_ERROR)<<"Parameter Error!";
+            FILE_LOG(LOG_ERROR) << "Parameter Error!";
             return -errno;
         }
     }
     return 0;
+}
+
+int client_open(char *inputOrder) {
+    send(sock, inputOrder, strlen(inputOrder), 0);
+    Json::Value root;
+    Json::Reader reader;
+    char buffer[1024];
+    memset(buffer, '\0', sizeof buffer);
+    read(sock, buffer, 1024);
+    if (reader.parse(buffer, root)) {
+        if(root["issucess"].asInt() == 1) {
+            return 0;
+        } else {
+            FILE_LOG(LOG_ERROR)<< "File not exists";
+            return -errno;
+        }
+    } else {
+        FILE_LOG(LOG_ERROR) << "Parameter Error!";
+        return -errno;
+    }
+
 }
