@@ -40,6 +40,8 @@ orders getOrder(string order) {
         o = GETATTR;
     else if(strcmp(order.c_str(), "open") == 0)
         o = OPEN;
+    else if(strcmp(order.c_str(), "read") == 0)
+        o = READ;
     return o;
 }
 
@@ -84,11 +86,18 @@ int main(int argc, char const *argv[]) {
             case GETATTR: {
                 struct stat * st;
                 if (client_getattr(inputOrder, st) == 0)
-                    cout<< st->st_size<< endl;
+//                    cout<< st->st_size<< endl;
                 break;
             }
             case OPEN: {
                 client_open(inputOrder);
+                break;
+            }
+            case READ: {
+                char buf[1024];
+                memset(buf, '\0', 1024);
+                client_read(inputOrder, buf);
+                FILE_LOG(LOG_DEBUG)<< buf<< endl;
                 break;
             }
             default:

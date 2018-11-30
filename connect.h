@@ -11,4 +11,6 @@ int client_getattr(char * inputOrder,  struct stat * stbuf);
 
 int client_open(char *inputOrder);
 
+int client_read(char *inputOrder, char * buf);
+
 #endif //NDNFS_CLIENT_CONNECT_H
