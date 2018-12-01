@@ -31,7 +31,7 @@
 extern int sock;
 
 enum orders {
-    DEFAULT, QUIT, SEND, GETATTR, OPEN, READ
+    DEFAULT, QUIT, SEND, GETATTR, OPEN, READ, WRITE
 };
 
 

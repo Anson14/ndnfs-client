@@ -73,6 +73,7 @@ int client_read(char *inputOrder, char *buf) {
         if (root["issucess"].asInt() == 1) {
             strcpy(read_buf, root["buf"].asCString());
 //            FILE_LOG(LOG_DEBUG)<< read_buf<< "  "<< root["readlen"].asInt()<< endl;
+            memset(buf, '\0', sizeof buf);
             strcpy(buf, read_buf);
             return root["readlen"].asInt();
         } else {
@@ -81,6 +82,35 @@ int client_read(char *inputOrder, char *buf) {
         }
     } else {
         FILE_LOG(LOG_ERROR) << "Parameter Error!" << endl;
+        return -errno;
+    }
+}
+
+int client_write(char * inputOrder) {
+    vector<string> v;
+    SplitString(inputOrder, v, " ");
+    int size = stoi(v[2]);
+    FILE_LOG(LOG_DEBUG) << "client_write" << endl;
+    // input the content you want to write
+    char writebuff[size+1];
+    memset(writebuff, '\0', sizeof writebuff);
+    cin.getline(writebuff, sizeof writebuff);
+    send(sock, inputOrder, strlen(inputOrder), 0);
+    send(sock, writebuff, sizeof writebuff, 0);
+    Json::Value root;
+    Json::Reader reader;
+    char buffer[1024];
+    memset(buffer, '\0', 1024);
+    read(sock, buffer, 1024);
+    if(reader.parse(buffer, root)) {
+        if(root["issucess"].asInt() == 1) {
+            return root["size"].asInt();
+        } else {
+            FILE_LOG(LOG_ERROR) << "File note exists!"<< endl;
+            return -errno;
+        }
+    } else {
+        FILE_LOG(LOG_ERROR)<< "Parameter Error!"<< endl;
         return -errno;
     }
 }

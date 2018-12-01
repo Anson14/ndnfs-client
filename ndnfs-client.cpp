@@ -42,6 +42,8 @@ orders getOrder(string order) {
         o = OPEN;
     else if(strcmp(order.c_str(), "read") == 0)
         o = READ;
+    else if(strcmp(order.c_str(), "write") == 0)
+        o = WRITE;
     return o;
 }
 
@@ -98,6 +100,10 @@ int main(int argc, char const *argv[]) {
                 memset(buf, '\0', 1024);
                 client_read(inputOrder, buf);
                 FILE_LOG(LOG_DEBUG)<< buf<< endl;
+                break;
+            }
+            case WRITE: {
+                FILE_LOG(LOG_DEBUG)<< "Write size:"<< client_write(inputOrder)<< endl;
                 break;
             }
             default:
