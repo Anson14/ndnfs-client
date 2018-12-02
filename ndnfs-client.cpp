@@ -38,15 +38,18 @@ orders getOrder(string order) {
         o = SEND;
     else if (strcmp(order.c_str(), "getattr") == 0)
         o = GETATTR;
-    else if(strcmp(order.c_str(), "open") == 0)
+    else if (strcmp(order.c_str(), "open") == 0)
         o = OPEN;
-    else if(strcmp(order.c_str(), "read") == 0)
+    else if (strcmp(order.c_str(), "read") == 0)
         o = READ;
-    else if(strcmp(order.c_str(), "write") == 0)
+    else if (strcmp(order.c_str(), "write") == 0)
         o = WRITE;
+    else if (strcmp(order.c_str(), "release") == 0)
+        o = RELEASE;
     return o;
 }
 
+// TODO: It should cover all possible usage
 void usage() {
     cout << "usage:" << endl;
     cout << "send: send a message to server." << endl;
@@ -56,7 +59,7 @@ void usage() {
 
 int main(int argc, char const *argv[]) {
 
-    int  valread;
+    int valread;
     struct sockaddr_in serv_addr;
     char *hello = "Hello from client";
     char buffer[1024] = {0};
@@ -86,10 +89,10 @@ int main(int argc, char const *argv[]) {
                 break;
             }
             case GETATTR: {
-                struct stat * st;
+                struct stat *st;
                 if (client_getattr(inputOrder, st) == 0)
 //                    cout<< st->st_size<< endl;
-                break;
+                    break;
             }
             case OPEN: {
                 client_open(inputOrder);
@@ -99,11 +102,15 @@ int main(int argc, char const *argv[]) {
                 char buf[1024];
                 memset(buf, '\0', 1024);
                 client_read(inputOrder, buf);
-                FILE_LOG(LOG_DEBUG)<< buf<< endl;
+                FILE_LOG(LOG_DEBUG) << buf << endl;
                 break;
             }
             case WRITE: {
-                FILE_LOG(LOG_DEBUG)<< "Write size:"<< client_write(inputOrder)<< endl;
+                FILE_LOG(LOG_DEBUG) << "Write size:" << client_write(inputOrder) << endl;
+                break;
+            }
+            case RELEASE: {
+                client_release(inputOrder);
                 break;
             }
             default:

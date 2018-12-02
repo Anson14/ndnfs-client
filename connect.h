@@ -15,4 +15,6 @@ int client_read(char *inputOrder, char * buf);
 
 int client_write(char *inputOrer);
 
+int client_release(char *inputOrder);
+
 #endif //NDNFS_CLIENT_CONNECT_H

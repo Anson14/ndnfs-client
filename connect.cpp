@@ -93,8 +93,8 @@ int client_write(char * inputOrder) {
     FILE_LOG(LOG_DEBUG) << "client_write" << endl;
     // input the content you want to write
     char writebuff[size+1];
-    memset(writebuff, '\0', sizeof writebuff);
     cin.getline(writebuff, sizeof writebuff);
+    writebuff[sizeof writebuff - 1] = '\0';
     send(sock, inputOrder, strlen(inputOrder), 0);
     send(sock, writebuff, sizeof writebuff, 0);
     Json::Value root;
@@ -111,6 +111,27 @@ int client_write(char * inputOrder) {
         }
     } else {
         FILE_LOG(LOG_ERROR)<< "Parameter Error!"<< endl;
+        return -errno;
+    }
+}
+
+int client_release(char *inputOrder) {
+    FILE_LOG(LOG_DEBUG) << "client_release" << endl;
+    send(sock, inputOrder, strlen(inputOrder), 0);
+    Json::Value root;
+    Json::Reader reader;
+    char buffer[1024];
+    memset(buffer, '\0', sizeof buffer);
+    read(sock, buffer, 1024);
+    if (reader.parse(buffer, root)) {
+        if (root["issucess"].asInt() == 1) {
+            return 0;
+        } else {
+            FILE_LOG(LOG_ERROR) << "File not exists" << endl;
+            return -errno;
+        }
+    } else {
+        FILE_LOG(LOG_ERROR) << "Parameter Error!" << endl;
         return -errno;
     }
 }
