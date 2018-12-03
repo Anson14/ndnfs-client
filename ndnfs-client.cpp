@@ -46,6 +46,16 @@ orders getOrder(string order) {
         o = WRITE;
     else if (strcmp(order.c_str(), "release") == 0)
         o = RELEASE;
+    else if(strcmp(order.c_str(), "mknod") == 0)
+        o = MKNOD;
+    else if(strcmp(order.c_str(), "rm") == 0)
+        o = RM;
+    else if(strcmp(order.c_str(), "mkdir") == 0)
+        o = MKDIR;
+    else if(strcmp(order.c_str(), "readdir") == 0)
+        o = READDIR;
+    else if(strcmp(order.c_str(), "rmdir") == 0)
+        o = RMDIR;
     return o;
 }
 
@@ -111,6 +121,27 @@ int main(int argc, char const *argv[]) {
             }
             case RELEASE: {
                 client_release(inputOrder);
+                break;
+            }
+            case MKNOD: {
+                client_mknod(inputOrder);
+                break;
+            }
+            case RM: {
+                client_rm(inputOrder);
+                break;
+            }
+            case READDIR: {
+                vector<string> dir;
+                client_readdir(inputOrder, dir);
+                break;
+            }
+            case MKDIR: {
+                client_mkdir(inputOrder);
+                break;
+            }
+            case RMDIR: {
+                client_rmdir(inputOrder);
                 break;
             }
             default:
